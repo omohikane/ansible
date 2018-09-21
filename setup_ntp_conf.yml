@@ -1,0 +1,23 @@
+---
+- hosts: all
+  
+  tasks:
+   - name: install ntp
+     yum: name=ntp state=latest
+
+   - name: copy ntp.conf
+     copy:
+       src: /conf/ntp.conf
+       dest: /etc/ntp.conf
+       owner: root
+       group: root
+       mode: 0644
+       avi_backup: yes
+       register: result
+
+   - name: restart ntpd
+     systemd:
+      name: ntpd.service
+      state: restarted
+      enabled: yes
+      when: result|changed
