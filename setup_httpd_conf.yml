@@ -1,0 +1,23 @@
+---
+- hosts: all
+  
+  tasks:
+   - name: install httpd
+     yum: name=httpd state=latest
+
+   - name: copy conf
+     copy:
+       src: 
+       dest: 
+       owner: root
+       group: root
+       mode: 0644
+       avi_backup: yes
+       register: result
+
+   - name: restart 
+     systemd:
+      name: .service
+      state: restarted
+      enabled: yes
+      when: result|changed
