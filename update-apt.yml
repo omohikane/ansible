@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  tasks:
+    - name: Update - Upgrade
+    apt:
+      update_cache: "yes"
+      upgrade: "dist"
