@@ -1,0 +1,54 @@
+---
+ - name: CoreSW SVI-Vlan  Add ax
+   hosts: hoge
+   gather_facts: no
+   connection: network_cli
+   become: yes
+   become_method: enable
+   vars_prompt:
+      - name: "vlanID"
+      - name: "priority"
+      - name: "ospfNetwork"
+      - name: "ospfHost"
+      - name: "ospfArea"
+
+
+   tasks:
+    - name: add vlan
+      ax_config:
+        lines:
+          - vlan {{ vlanID }}
+      
+    - name: conf spanning-tree 
+      ax_config:
+        lines:
+          - sppaning-tree vlan {{ vlanID }} priority {{ priority }}
+      
+    - name: conf port-channnel
+      ax_config:
+        lines:
+          - switchport trun allowed vlan add {{ vlanID }}
+        parents: interface port-channnel 3
+      
+    - name: conf int vlan
+      ax_config:
+        lines:
+          - arp timeout 1200
+          - ip address {{ ipa }} {{ host }}
+          - no ip redirects
+          - ip qos-flow-group color in layer3-forwarding
+          - ip helper-address {{ helperIP }}
+        parets: interface vlan {{ vlanID }}
+      
+    - name: conf ospf
+      ax_config:
+        lines:
+          - passive-interface vlan {{ vlanID }}
+          - network {{ ospfNetwork }} {{ ospfHost }} area {{ ospfArea }}
+        parets: router ospf1
+  
+   vars:
+    hoge:
+    host: "{{ ansible_network_os }}"
+    username: "{{ ansible_ssh_pass}}"
+    auth_path: "{{ ansible_user }}"

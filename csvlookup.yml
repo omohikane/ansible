@@ -1,0 +1,11 @@
+---
+ - hosts: Cisco
+   vars:
+     ip1: " {{ lookup( 'csvfile', 'ip1 file=csvfile.csv delimiter=,') }} "
+     ip2: " {{ lookup( 'csvfile', 'ip2 file=csvfile.csv delimiter=,') }} "
+     host: " {{ lookup( 'csvfile', 'host file=csvfile.csv delimiter=,') }} "
+
+   
+
+   tasks:
+    - 

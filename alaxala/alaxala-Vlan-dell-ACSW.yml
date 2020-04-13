@@ -1,0 +1,40 @@
+---
+ - name: ACSW SVI-Vlan  remove ax
+   hosts: hoge
+   gather_facts: no
+   connection: network_cli
+   become: yes
+   become_method: enable
+   vars_prompt:
+      - name: "vlanID"
+
+   tasks:
+    - name: conf gigaeth0/10 remove
+      ax_config:
+        lines:
+          - switchport trun allowed vlan add {{ vlanID }}
+
+
+
+        parents: interface gigabitethernet0/10
+   
+   
+    - name: conf int port-channnel1 remove
+      ax_config:
+        lines:
+          - switchport trunk allowed vlan remove {{ vlanID }} 
+        parents: interface port-channnel 1
+
+    - name: remove vlan
+      ax_config:
+        lines:
+          - no vlan {{ vlanID }}
+      
+      
+      
+  
+   vars:
+    hoge:
+    host: "{{ ansible_network_os }}"
+    username: "{{ ansible_ssh_pass}}"
+    auth_path: "{{ ansible_user }}"

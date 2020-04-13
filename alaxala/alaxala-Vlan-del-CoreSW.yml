@@ -1,0 +1,49 @@
+---
+ - name: CoreSW SVI-Vlan  remove ax
+   hosts: hoge
+   gather_facts: no
+   connection: network_cli
+   become: yes
+   become_method: enable
+   vars_prompt:
+      - name: "vlanID"
+      - name: "priority"
+      - name: "ospfNetwork"
+      - name: "ospfHost"
+      - name: "ospfArea"
+
+
+   tasks:
+    - name: conf no ospf
+      ax_config:
+        lines:
+          - no passive-interface vlan {{ vlanID }}
+          - no network {{ ospfNetwork }} {{ ospfHost }} area {{ ospfArea }}
+        parets: router osf1
+  
+    - name: conf no port-channnel
+      ax_config:
+        lines:
+          - switchport trun allowed vlan remove {{ vlanID }}
+        parents: interface port-channnel 3
+
+    - name: conf int vlan remove
+      ax_config:
+        lines:
+          - no interface vlan {{ vlanID }}
+
+    - name: conf spanning-tree remove
+      ax_config:
+        lines:
+          - no sppaning-tree vlan {{ vlanID }} priority {{ priority }}
+
+    - name: remove vlan
+      ax_config:
+        lines:
+          - no vlan {{ vlanID }}
+
+   vars:
+    hoge:
+    host: "{{ ansible_network_os }}"
+    username: "{{ ansible_ssh_pass}}"
+    auth_path: "{{ ansible_user }}"
